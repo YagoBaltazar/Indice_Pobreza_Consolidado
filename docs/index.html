@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Análise Multivariada e Espacial dos Índices de Pobreza no Brasil sob os Princípios FAIR</title>
-  <meta name="description" content="Análise exploratória dos índices de pobreza e vulnerabilidade no Brasil sob a governança dos princípios FAIR.">
+  <title>Análise Exploratória Temporal dos Índices de Pobreza e Vulnerabilidade no Brasil sob os Princípios FAIR</title>
+  <meta name="description" content="Estudo longitudinal sobre a evolução da pobreza, extrema pobreza e grupos vulneráveis no Brasil (2012-2022) utilizando Python e princípios FAIR.">
   
   <!-- MathJax para renderização de equações matemáticas -->
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -163,11 +163,12 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
-    figure img {
+    iframe {
       width: 100%;
-      height: auto;
-      display: block;
+      height: 460px;
+      border: 0;
       border-radius: 4px;
+      background: #fff;
     }
 
     figcaption {
@@ -201,6 +202,7 @@
       body { font-size: 16px; }
       main { padding: 1.5rem 1rem 3rem; }
       h1 { font-size: 1.65rem; }
+      iframe { height: 360px; }
     }
   </style>
 </head>
@@ -208,7 +210,7 @@
 <main>
 
 <header>
-  <h1>Análise Multivariada e Espacial dos Índices de Pobreza e Vulnerabilidade no Brasil sob os Princípios FAIR</h1>
+  <h1>Análise Exploratória Temporal dos Índices de Pobreza e Vulnerabilidade no Brasil sob os Princípios FAIR</h1>
   <p class="meta">
     <strong>Yago Baltazar Ferreira</strong><br>
     Bacharelado em Sistemas de Informação — Universidade La Salle (UniLaSalle)<br>
@@ -225,9 +227,9 @@
 <section class="abstract">
   <h2>Resumo</h2>
   <p>
-    Este estudo apresenta uma análise exploratória de dados (EDA) sobre a incidência de pobreza e vulnerabilidade social nos municípios brasileiros. Desenvolveu-se um pipeline de ingestão determinístico em Python, garantindo rastreabilidade integral através da exportação automática de relatórios em JSON. A limpeza tratou problemas de codificação, padronizou nomenclatura em <code>snake_case</code>, converteu representações numéricas no padrão pt-BR e manteve a integridade das observações sem descarte silencioso de duplicatas ou nulos. Os resultados apontam disparidades profundas: a mediana da taxa de pobreza ultrapassa 38,5% nas regiões Norte e Nordeste, enquanto as regiões Sul e Sudeste registram marcas inferiores a 16,2%. Notou-se forte correlação positiva (\(r = 0{,}89\)) entre a extrema pobreza e a falta de saneamento básico. O projeto cumpre rigorosamente os princípios FAIR (Findable, Accessible, Interoperable, Reusable).
+    Este estudo apresenta uma análise exploratória de dados (EDA) longitudinal sobre a evolução da pobreza, extrema pobreza e grupos vulneráveis específicos no Brasil no período de agosto de 2012 a setembro de 2022 (122 meses). Desenvolveu-se um pipeline determinístico em Python (utilizando <code>pandas</code>, <code>numpy</code> e <code>Plotly</code>) para o processamento de indicadores consolidados nacionais. Os resultados apontam que a taxa de pobreza apresentou queda significativa de 9,99% para 4,46% (-5,53 p.p.), enquanto a extrema pobreza permaneceu patamarizada com leve alta de 22,88% para 23,00% (+0,12 p.p.). A análise por grupos populacionais em base 100 revelou um crescimento desproporcional na identificação de vulnerabilidade entre populações tradicionais, com destaque para a comunidade cigana (+968,6%) e quilombola (+217,7%). A análise de variações mensais demonstrou que a vulnerabilidade geral é impulsionada primariamente pelo contingente de famílias vulneráveis (\(r = 0{,}98\)). Todo o projeto foi construído sob governança e conformidade rigorosa com os princípios FAIR (Findable, Accessible, Interoperable, Reusable).
   </p>
-  <p><strong>Palavras-chave:</strong> pobreza; vulnerabilidade social; estatística descritiva; engenharia de dados; princípios FAIR; Python.</p>
+  <p><strong>Palavras-chave:</strong> pobreza; extrema pobreza; vulnerabilidade social; povos tradicionais; análise temporal; princípios FAIR.</p>
 </section>
 
 <nav aria-label="Sumário">
@@ -244,84 +246,99 @@
 
 <h2 id="intro">1. Introdução</h2>
 <p>
-  A mensuração rigorosa dos indicadores socioeconômicos de pobreza e extrema pobreza é indispensável para subsidiar políticas públicas de desenvolvimento e distribuição de renda. O Brasil apresenta marcantes assimetrias entre suas grandes regiões, exigindo a consolidação de dados públicos abertos para extração de insights estatísticos precisos.
+  A acompanhamento contínuo dos indicadores socioeconômicos de pobreza e extrema pobreza é fundamental para diagnosticar a eficácia de programas de assistência social e a inclusão de minorias populacionais. A base de dados analisada constitui uma série temporal mensal nacional agregada, abrangendo 122 meses contínuos entre agosto de 2012 e setembro de 2022.
 </p>
-<p>Este trabalho investiga as seguintes perguntas de pesquisa:</p>
+<p>Este trabalho responde formalmente a duas perguntas centrais de pesquisa:</p>
 <ul>
-  <li><strong>RQ1.</strong> Como as taxas de pobreza se distribuem entre as regiões brasileiras e como se comportam a dispersão e os valores discrepantes (outliers)?</li>
-  <li><strong>RQ2.</strong> Qual é a intensidade da correlação entre o índice de vulnerabilidade, a renda média per capita e o saneamento básico?</li>
+  <li><strong>RQ1.</strong> Como evoluíram as taxas de pobreza e extrema pobreza no Brasil ao longo do período analisado, e como os grupos populacionais específicos (famílias, indígenas, quilombolas e ciganos) se comportaram longitudinalmente?</li>
+  <li><strong>RQ2.</strong> De que forma as variáveis e subcomponentes de vulnerabilidade se correlacionam em nível e em termos de variação percentual mensal?</li>
 </ul>
 
 <h2 id="metodo">2. Metodologia e pipeline de dados</h2>
 <p>
-  <strong>Fonte.</strong> Conjunto de dados "Índices de Pobreza no Brasil", extraído de fontes oficiais (IBGE/IPEA) e hospedado no Kaggle. Granularidade: observações por unidade municipal e regional.
+  <strong>Fonte e Granularidade.</strong> O estudo utiliza o dataset <code>indices_pobreza_consolidado.csv</code> extraído do Kaggle. Trata-se de uma série temporal mensal sem estratificação geográfica por estados ou regiões. Cada observação representa o panorama consolidado nacional em determinado mês.
 </p>
 <p>
-  <strong>Pipeline de Ingestão e Tratamento (<code>src/etl.py</code>).</strong> Foi implementado um script Python determinístico baseado nos seguintes passos:
+  <strong>Higienização e Transformação.</strong> O script de ETL e o notebook exploratório validaram o dataset através das seguintes etapas:
 </p>
 <ul>
-  <li><strong>Detecção Automática:</strong> Leitura via <code>read_raw()</code> iterando sobre codificações (<code>utf-8-sig</code>, <code>utf-8</code>, <code>latin-1</code>) e delimitação dinâmica.</li>
-  <li><strong>Normalização:</strong> Função <code>snake_case()</code> utilizando remoção de acentos por decomposição Unicode (NFKD) para padronizar o nome de todas as colunas.</li>
-  <li><strong>Conversão de Tipos:</strong> Função <code>_ptbr_to_float()</code> para limpeza de símbolos monetários (<code>R$</code>, <code>%</code>), remoção de pontos de milhar e substituição da vírgula decimal por ponto.</li>
-  <li><strong>Rastreabilidade:</strong> Registro de cada operação no arquivo <code>data/processed/etl_report.json</code>, mantendo a contagem das linhas de entrada, conversões, duplicatas e contagem exata de nulos por coluna. Ao utilizar a opção <code>--impute</code>, os nulos são substituídos pela mediana e demarcados com uma coluna-flag <code>*_imputado</code>.</li>
+  <li><strong>Validação Temporal e Consistência:</strong> Reordenação cronológica a partir do campo <code>periodo</code> (formato AAAAMM) convertido para objeto <code>datetime</code>. Verificou-se ausência total de nulos (0%) e duplicatas exatas.</li>
+  <li><strong>Recálculo de Percentuais de Alta Precisão:</strong> Os percentuais fornecidos originalmente no CSV possuíam apenas duas casas decimais com truncamento. Foram recalculados os indicadores relativos:
+    $$\text{pct\_pobreza} = \frac{\text{pobreza}}{\text{populacao\_estimada}} \times 100$$
+    $$\text{pct\_extrema\_pobreza} = \frac{\text{extrema\_pobreza}}{\text{populacao\_estimada}} \times 100$$
+  </li>
+  <li><strong>Análise de Base 100 para Grupos Especificos:</strong> Devido à grande disparidade de magnitude absoluta entre os grupos (ex.: milhões de famílias vs. milhares de ciganos), aplicou-se normalização por índice base 100 (\(\text{Mês}_0 = 100\)) para comparar trajetórias relativas de crescimento.</li>
+  <li><strong>Diferenciação de Séries para Correlação:</strong> Para evitar correlações espúrias infladas por tendência temporal comum, calculou-se a matriz de correlação das variações percentuais mensais via <code>pct_change()</code>.</li>
 </ul>
 
 <pre><code>import pandas as pd
-from src import etl
+from pathlib import Path
 
-# Ingestão resiliente com detecção automática de encoding
-raw = etl.read_raw()
+# Carregamento e higienização cronológica
+df = pd.read_csv("data/raw/indices_pobreza_consolidado.csv").drop_duplicates()
+df["data"] = pd.to_datetime(df["periodo"].astype(str), format="%Y%m")
+df = df.sort_values("data").reset_index(drop=True)
 
-# Limpeza determinística: padronização snake_case, pt-BR to float e contagem de nulos
-df, report = etl.clean(raw, impute=False)
+# Recálculo de precisão dos indicadores socioeconômicos
+df["pct_pobreza"] = df["pobreza"] / df["populacao_estimada"] * 100
+df["pct_extrema_pobreza"] = df["extrema_pobreza"] / df["populacao_estimada"] * 100
+df["pct_vulnerabilidade"] = df["total"] / df["populacao_estimada"] * 100
 
-# Persistência tratada em padrões universais abertos (FAIR)
-etl.save(df, report)  # Gera dados_limpos.parquet e dados_limpos.csv.gz
-
-# Identificação estatística de Outliers via Amplitude Interquartílica (IQR)
-q1, q3 = df['taxa_de_pobreza'].quantile([0.25, 0.75])
+# Detecção estatística de Outliers via Amplitude Interquartílica (IQR)
+q1, q3 = df["pct_extrema_pobreza"].quantile([0.25, 0.75])
 iqr = q3 - q1
-outliers = df[(df['taxa_de_pobreza'] < q1 - 1.5 * iqr) | (df['taxa_de_pobreza'] > q3 + 1.5 * iqr)]
-print(f"Total de outliers identificados: {len(outliers)}")</code></pre>
+outliers = df[(df["pct_extrema_pobreza"] < q1 - 1.5 * iqr) | (df["pct_extrema_pobreza"] > q3 + 1.5 * iqr)]
+print(f"Total de outliers em extrema pobreza: {len(outliers)}")</code></pre>
 
 <h2 id="resultados">3. Resultados e discussão</h2>
 
-<h3>3.1 Distribuição e outliers</h3>
+<h3>3.1 Distribuição da Métrica Principal e Outliers</h3>
 <figure>
-  <img src="assets/fig1_distribuicao.png" alt="Distribuição da taxa de pobreza por região" loading="lazy">
-  <figcaption>Figura 1. Distribuição percentual da taxa de pobreza por Grande Região Geográfica. Destaca a assimetria com desvio à direita e a concentração de outliers no Nordeste.</figcaption>
+  <iframe src="assets/fig1_distribuicao.html" title="Distribuição de extrema pobreza (% da população)"></iframe>
+  <figcaption>Figura 1. Histograma e Boxplot da distribuição do percentual da população em extrema pobreza (2012-2022).</figcaption>
 </figure>
 <p>
-  A Figura 1 evidencia a heterogeneidade territorial do país. Enquanto o desvio interquartílico ( \(\text{IQR} = Q_3 - Q_1\) ) da região Sul indica uma distribuição concentrada com mediana de 12,4%, a região Nordeste registra mediana de 41,2%. O pipeline identificou 14 municípios considerados outliers severos no Nordeste, onde a taxa ultrapassa 62,5%.
+  A métrica principal de extrema pobreza apresentou mediana de 19,02% da população total, variando entre um mínimo de 17,86% (dez/2016) e um máximo de 23,06% (nov/2012). O teste de Amplitude Interquartílica (\(\text{IQR} = 3{,}36\text{ p.p.}\)) determinou limites entre 13,51% e 26,95%, indicando **zero outliers**. A ausência de pontos discrepantes confirma uma série temporal homogênea e livre de anomalias abruptas de medição.
 </p>
 
-<h3>3.2 Disparidades Regionais (RQ1)</h3>
+<h3>3.2 Evolução Temporal e Comportamento dos Grupos (RQ1)</h3>
 <figure>
-  <img src="assets/fig2_rq1.png" alt="Evolução temporal e regional da pobreza" loading="lazy">
-  <figcaption>Figura 2. Comparativo regional da taxa consolidada de pobreza e extrema pobreza.</figcaption>
+  <iframe src="assets/fig2_rq1.html" title="Pobreza, extrema pobreza e vulnerabilidade ao longo do tempo"></iframe>
+  <figcaption>Figura 2. Trajetória percentual da população em situação de pobreza, extrema pobreza e vulnerabilidade total (2012-2022).</figcaption>
+</figure>
+<figure>
+  <iframe src="assets/fig2b_grupos.html" title="Vulnerabilidade por grupo em índice base 100"></iframe>
+  <figcaption>Figura 3. Evolução da vulnerabilidade por grupos populacionais específicos em índice base 100 (ago/2012 = 100).</figcaption>
 </figure>
 <p>
-  Em resposta à <strong>RQ1</strong>, a análise confirma que o abismo regional é persistente. As regiões Norte e Nordeste apresentam médias sistematicamente superiores ao dobro das médias observadas no Sul e Sudeste, demonstrando que o problema da pobreza exige ações estruturais focadas na infraestrutura local.
+  Em resposta à <strong>RQ1</strong>, os dados revelam comportamentos divergentes: enquanto a taxa de pobreza declinou expressivamente de 9,99% para 4,46% (-5,53 p.p.), a extrema pobreza manteve-se rígida, evoluindo de 22,88% para 23,00% (+0,12 p.p.). O indicador global de vulnerabilidade total reduziu de 32,87% para 27,45%.
+</p>
+<p>
+  Em relação aos grupos populacionais específicos (Figura 3), observou-se uma forte expansão no cadastramento de vulnerabilidade de populações tradicionais em comparação ao primeiro mês da série: o número de famílias vulneráveis cresceu +31,8% (de 18,16 mi para 23,93 mi), indígenas subiram +84,3% (100,7 mil para 185,6 mil), quilombolas aumentaram +217,7% (65,3 mil para 207,5 mil) e a população cigana teve um salto expressivo de +968,6% (876 para 9.361 cadastrados), refletindo maior cobertura de busca ativa e inclusão nos cadastros sociais.
 </p>
 
-<h3>3.3 Matriz de Correlação e Vulnerabilidade (RQ2)</h3>
+<h3>3.3 Análise de Correlação em Nível e Variação Mensal (RQ2)</h3>
 <figure>
-  <img src="assets/fig3_correlacao.png" alt="Matriz de Correlação de Spearman" loading="lazy">
-  <figcaption>Figura 3. Heatmap da matriz de correlação entre variáveis de saneamento, renda e pobreza.</figcaption>
+  <iframe src="assets/fig3_correlacao.html" title="Correlação entre indicadores em nível"></iframe>
+  <figcaption>Figura 4. Matriz de correlação de Pearson para os valores absolutos (em nível).</figcaption>
+</figure>
+<figure>
+  <iframe src="assets/fig3b_correlacao_variacao.html" title="Correlação entre variações mensais"></iframe>
+  <figcaption>Figura 5. Matriz de correlação entre as variações percentuais mensais (diferenciação temporal).</figcaption>
 </figure>
 <p>
-  Em resposta à <strong>RQ2</strong>, a análise de correlação não paramétrica revelou forte associação positiva (\(r = 0{,}89\), \(p < 0{,}001\)) entre a ausência de saneamento básico e a extrema pobreza. Em contrapartida, a renda média per capita apresentou correlação inversa acentuada (\(r = -0{,}84\)), corroborando que melhorias em saneamento acompanham diretamente a redução das taxas de vulnerabilidade extrema.
+  Em resposta à <strong>RQ2</strong>, a análise de variação mensal (Figura 5) eliminou o efeito espúrio da tendência temporal comum. O par com maior correlação positiva observada foi entre o <code>total</code> de vulneráveis e o volume de <code>familias_vulnerabilidade</code> (\(r = 0{,}98\)), demonstrando dependência quase direta. Por outro lado, a variação da <code>populacao_estimada</code> apresentou menor correlação com a variação de vulnerabilidade entre <code>indigenas</code> (\(r = -0{,}13\)), evidenciando que os surtos de inclusão desses grupos ocorrem de forma desvinculada do crescimento demográfico geral.
 </p>
 
 <h2 id="conclusao">4. Conclusão</h2>
 <p>
-  O estudo atingiu seus objetivos ao demonstrar as disparidades espaciais (RQ1) e as interdependências entre vulnerabilidade social e falta de infraestrutura de saneamento (RQ2). O uso de um pipeline rigoroso em Python assegurou a reprodutibilidade dos resultados sem supressão arbitrária de dados.
+  A análise exploratória comprovou a utilidade da engenharia de dados determinística para compreender a dinâmicas de assistência social no Brasil. Ficou evidente a contradição entre a queda da pobreza moderada e a estabilidade da extrema pobreza ao longo da década (RQ1), assim como a eficácia da diferenciação por variações mensais para isolar co-movimentos reais de indicadores socioeconômicos (RQ2).
 </p>
 <p>
-  <strong>Limitações:</strong> Presença de variação temporal nos microdados municipais e ausência de dados em tempo real sobre auxílios emergenciais locais.
+  <strong>Limitações:</strong> O dataset opera sob aglutinação nacional mensal, sem detalhamento no nível de municípios ou estados.
 </p>
 <p>
-  <strong>Trabalhos futuros:</strong> Cruzamento dos dados limpos com os registros do Cadastro Único (CadÚnico) e geração de mapas coropléticos interativos.
+  <strong>Trabalhos futuros:</strong> Integrar dados desagregados por Unidade Federativa para mapeamento geográfico de focos regionais de extrema pobreza.
 </p>
 
 <h2 id="fair">5. Disponibilidade dos dados e declaração FAIR</h2>
@@ -335,38 +352,36 @@ print(f"Total de outliers identificados: {len(outliers)}")</code></pre>
   <tbody>
     <tr>
       <td><strong>Findable</strong> (Localizável)</td>
-      <td>README estruturado com badges, descrição executiva, palavras-chave e link perene para a fonte original.</td>
+      <td>README detalhado, palavra-chave indexadoras, identificação autoral formal e hyperlink direto para o Kaggle.</td>
     </tr>
     <tr>
       <td><strong>Accessible</strong> (Acessível)</td>
-      <td>Repositório público no GitHub sem credenciais; publicação via GitHub Pages com design responsivo.</td>
+      <td>Repositório público no GitHub; publicação web gratuita e responsiva via GitHub Pages.</td>
     </tr>
     <tr>
       <td><strong>Interoperable</strong> (Interoperável)</td>
-      <td>Metadados descritos em <code>data/data_dictionary.md</code>; dados processados salvos em Parquet e CSV comprimido.</td>
+      <td>Metadados descritos em <code>data/data_dictionary.md</code>; dados salvos em formatos universais (Parquet e CSV.GZ).</td>
     </tr>
     <tr>
       <td><strong>Reusable</strong> (Reutilizável)</td>
-      <td>Licenças MIT (código) e CC BY 4.0 (dados); ambiente congelado em <code>requirements.txt</code>.</td>
+      <td>Código licenciado sob MIT, dados em CC BY 4.0; dependências registradas com versões estritas em <code>requirements.txt</code>.</td>
     </tr>
   </tbody>
 </table>
 
-<p>Para clonar e reproduzir integralmente este projeto:</p>
+<p>Para clonar e reproduzir integralmente os achados deste estudo:</p>
 <pre><code>git clone https://github.com/YagoBaltazar/Indice_Pobreza_Consolidado.git
 cd Indice_Pobreza_Consolidado
 python -m venv .venv
 source .venv/bin/activate  # No Windows use: .venv\Scripts\activate
 pip install -r requirements.txt
 python -m src.etl
-python -m src.etl --dictionary
 jupyter lab notebooks/analise_exploratoria.ipynb</code></pre>
 
 <h2 id="refs">6. Referências</h2>
 <ol>
   <li>FIDELIS SAURO. <em>Índices de Pobreza no Brasil</em>. Kaggle, 2023. Disponível em: &lt;https://www.kaggle.com/datasets/fidelissauro/indices-pobreza-brasil&gt;. Acesso em: 16 nov. 2026.</li>
-  <li>INSTITUTO BRASILEIRO DE GEOGRAFIA E ESTATÍSTICA (IBGE). <em>Síntese de Indicadores Sociais: Uma análise das condições de vida da população brasileira</em>. Rio de Janeiro: IBGE, 2023.</li>
-  <li>INSTITUTO DE PESQUISA ECONÔMICA APLICADA (IPEA). <em>Atlas da Vulnerabilidade Social nos Municípios Brasileiros</em>. Brasília: IPEA, 2022.</li>
+  <li>INSTITUTO BRASILEIRO DE GEOGRAFIA E ESTATÍSTICA (IBGE). <em>Estimativas da População Residente no Brasil</em>. Rio de Janeiro: IBGE, 2022.</li>
   <li>MCKINNEY, Wes. <em>Python para Análise de Dados: Tratamento de Dados com Pandas, NumPy e Jupyter</em>. 3. ed. São Paulo: Novatec, 2023.</li>
   <li>WILKINSON, Mark D. et al. The FAIR Guiding Principles for scientific data management and stewardship. <em>Scientific Data</em>, v. 3, n. 160018, p. 1-9, 2016.</li>
 </ol>
