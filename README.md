@@ -7,7 +7,7 @@
 **Instituição:** UniLasalle
 
 ## Resumo executivo
-[PREENCHER: 3–5 linhas — tema, dados, método, principal achado.]
+Análise da série mensal nacional de pobreza, extrema pobreza e vulnerabilidade (ago/2012 a set/2022, 122 meses), incluindo recortes de famílias, indígenas, quilombolas e ciganos. O pipeline em Python limpa, valida e recalcula os percentuais sobre a população estimada. A pobreza caiu de 9,99% para 4,46% da população, enquanto a extrema pobreza ficou em torno de 23%, com mínimo de 17,86% em 2016. Os grupos tradicionais registram crescimento expressivo na contagem em vulnerabilidade.
 
 **Palavras-chave:** pobreza; extrema pobreza; vulnerabilidade social; indicadores públicos; Python; visualização de dados; FAIR.
 
