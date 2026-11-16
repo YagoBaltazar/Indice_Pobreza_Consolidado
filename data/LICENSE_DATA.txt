@@ -1,0 +1,5 @@
+Dados processados, dicionário de dados e texto do artigo: CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/
+
+Dados brutos: obtidos de Kaggle (fidelissauro/indices-pobreza-brasil).
+Confira a licença original na página do dataset e cite a fonte ao reutilizar.
