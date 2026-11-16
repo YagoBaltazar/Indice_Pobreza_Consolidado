@@ -2,7 +2,7 @@
 
 ![Python](https://img.shields.io/badge/python-3.11+-blue) ![License: MIT](https://img.shields.io/badge/code-MIT-green) ![Data: CC BY 4.0](https://img.shields.io/badge/data-CC%20BY%204.0-lightgrey)
 
-**Autores:** Yago Baltazar Ferreira
+**Autores:** Yago Baltazar Ferreira e Thalles Órion Yolcov Pitz
 **Disciplina:** Linguagem de Programação (Análise e Visualização de Dados com Python) — Bacharelado em Sistemas de Informação, 6º período, 2° semestre
 **Instituição:** UniLasalle
 
