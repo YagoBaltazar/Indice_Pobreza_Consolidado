@@ -28,8 +28,8 @@ Kaggle — Índices de Pobreza no Brasil: https://www.kaggle.com/datasets/fideli
 
 ## Como reproduzir
 ```bash
-git clone https://github.com/[SEU-USUARIO]/indices-pobreza-brasil.git
-cd indices-pobreza-brasil
+git clone https://github.com/YagoBaltazar/Indice_Pobreza_Consolidado.git
+d Indice_Pobreza_Consolidado
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 # coloque o CSV baixado do Kaggle em data/raw/
