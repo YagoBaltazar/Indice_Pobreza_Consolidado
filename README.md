@@ -12,7 +12,7 @@ Análise da série mensal nacional de pobreza, extrema pobreza e vulnerabilidade
 **Palavras-chave:** pobreza; extrema pobreza; vulnerabilidade social; indicadores públicos; Python; visualização de dados; FAIR.
 
 ## Artigo
-Publicado em: https://YagoBaltazar.github.io/indices-pobreza-brasil/
+Publicado em: https://github.com/YagoBaltazar/Indice_Pobreza_Consolidado/
 
 ## Fonte dos dados
 Kaggle — Índices de Pobreza no Brasil: https://www.kaggle.com/datasets/fidelissauro/indices-pobreza-brasil
