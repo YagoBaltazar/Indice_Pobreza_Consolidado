@@ -2,9 +2,9 @@
 
 ![Python](https://img.shields.io/badge/python-3.11+-blue) ![License: MIT](https://img.shields.io/badge/code-MIT-green) ![Data: CC BY 4.0](https://img.shields.io/badge/data-CC%20BY%204.0-lightgrey)
 
-**Autores:** Yago Baltazar Ferreira, [PREENCHER 2º autor], [PREENCHER 3º autor]
-**Disciplina:** Linguagem de Programação (Análise e Visualização de Dados com Python) — Bacharelado em Sistemas de Informação, 6º período, [PREENCHER semestre/ano]
-**Instituição:** [PREENCHER]
+**Autores:** Yago Baltazar Ferreira
+**Disciplina:** Linguagem de Programação (Análise e Visualização de Dados com Python) — Bacharelado em Sistemas de Informação, 6º período, 2° semestre
+**Instituição:** UniLasalle
 
 ## Resumo executivo
 [PREENCHER: 3–5 linhas — tema, dados, método, principal achado.]
@@ -12,7 +12,7 @@
 **Palavras-chave:** pobreza; extrema pobreza; vulnerabilidade social; indicadores públicos; Python; visualização de dados; FAIR.
 
 ## Artigo
-Publicado em: https://[SEU-USUARIO].github.io/indices-pobreza-brasil/
+Publicado em: https://YagoBaltazar.github.io/indices-pobreza-brasil/
 
 ## Fonte dos dados
 Kaggle — Índices de Pobreza no Brasil: https://www.kaggle.com/datasets/fidelissauro/indices-pobreza-brasil
