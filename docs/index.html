@@ -3,8 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Análise Multivariada e Espacial dos Índices de Pobreza e Vulnerabilidade no Brasil sob os Princípios FAIR</title>
-  <meta name="description" content="Estudo empírico sobre a distribuição espacial, evolução temporal e correlação entre indicadores socioeconômicos de pobreza e vulnerabilidade no Brasil utilizando Python e princípios FAIR.">
+  <title>Análise Multivariada e Espacial dos Índices de Pobreza no Brasil sob os Princípios FAIR</title>
+  <meta name="description" content="Análise exploratória dos índices de pobreza e vulnerabilidade no Brasil sob a governança dos princípios FAIR.">
+  
+  <!-- MathJax para renderização de equações matemáticas -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
   <style>
     :root {
       --ink: #1a252c;
@@ -14,14 +19,11 @@
       --card-bg: #ffffff;
       --accent: #1f5f6b;
       --accent-hover: #174750;
-      --code-bg: #1e293b;
-      --code-ink: #e2e8f0;
-      --highlight: #fef08a;
+      --code-bg: #0f172a;
+      --code-ink: #f8fafc;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -44,7 +46,7 @@
     }
 
     h1 {
-      font-size: 2.2rem;
+      font-size: 2.1rem;
       line-height: 1.25;
       margin: 0 0 1rem;
       color: #0f172a;
@@ -73,14 +75,8 @@
       font-size: 0.92rem;
     }
 
-    .meta {
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .meta strong {
-      color: var(--ink);
-    }
+    .meta { color: var(--muted); line-height: 1.6; }
+    .meta strong { color: var(--ink); }
 
     .badges {
       display: flex;
@@ -108,18 +104,12 @@
       border-color: var(--accent);
     }
 
-    .badges a.repo:hover {
-      background: var(--accent-hover);
-    }
+    .badges a.repo:hover { background: var(--accent-hover); }
 
     a {
       color: var(--accent);
       text-decoration: underline;
       text-underline-offset: 3px;
-    }
-
-    a:hover {
-      color: var(--accent-hover);
     }
 
     .abstract {
@@ -135,7 +125,7 @@
       border: 0;
       margin: 0 0 0.75rem;
       padding: 0;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -148,14 +138,8 @@
       margin: 2rem 0;
     }
 
-    nav ol {
-      margin: 0.5rem 0 0;
-      padding-left: 1.2rem;
-    }
-
-    nav li {
-      margin-bottom: 0.3rem;
-    }
+    nav ol { margin: 0.5rem 0 0; padding-left: 1.2rem; }
+    nav li { margin-bottom: 0.3rem; }
 
     pre {
       background: var(--code-bg);
@@ -163,14 +147,12 @@
       padding: 1.25rem;
       overflow-x: auto;
       border-radius: 8px;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       line-height: 1.55;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
 
-    code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
 
     figure {
       margin: 2rem 0;
@@ -181,12 +163,11 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
-    iframe {
+    figure img {
       width: 100%;
-      height: 460px;
-      border: 0;
+      height: auto;
+      display: block;
       border-radius: 4px;
-      background: #fff;
     }
 
     figcaption {
@@ -213,37 +194,13 @@
       text-align: left;
     }
 
-    th {
-      background: #f1f5f9;
-      color: #0f172a;
-      font-weight: 600;
-    }
-
-    tr:nth-child(even) {
-      background-color: #f8fafc;
-    }
-
-    ul, ol {
-      padding-left: 1.4rem;
-    }
-
-    li {
-      margin-bottom: 0.4rem;
-    }
+    th { background: #f1f5f9; color: #0f172a; font-weight: 600; }
+    tr:nth-child(even) { background-color: #f8fafc; }
 
     @media (max-width: 640px) {
-      body {
-        font-size: 16px;
-      }
-      main {
-        padding: 1.5rem 1rem 3rem;
-      }
-      h1 {
-        font-size: 1.65rem;
-      }
-      iframe {
-        height: 350px;
-      }
+      body { font-size: 16px; }
+      main { padding: 1.5rem 1rem 3rem; }
+      h1 { font-size: 1.65rem; }
     }
   </style>
 </head>
@@ -268,9 +225,9 @@
 <section class="abstract">
   <h2>Resumo</h2>
   <p>
-    Este estudo apresenta uma análise exploratória de dados (EDA) multivariada e espacial sobre a incidência de pobreza, extrema pobreza e vulnerabilidade social nas unidades federativas e municípios brasileiros. Utilizando um pipeline determinístico construído em Python com as bibliotecas <code>pandas</code>, <code>numpy</code>, <code>seaborn</code> e visualizações interativas via <code>Plotly</code>, o trabalho higienizou e consolidou microdados socioeconômicos públicos para quantificar disparidades regionais. Os achados centrais indicam uma acentuada assimetria geográfica: as regiões Norte e Nordeste registram taxas medianas de pobreza acima de 38,5%, enquanto as regiões Sul e Sudeste mantêm valores inferiores a 16,2%. Constatou-se uma correlação positiva extremamente forte (\(r > 0,89\)) entre a extrema pobreza e a falta de acesso a saneamento básico adequado. As implicações deste estudo reforçam a urgência de políticas públicas focadas em infraestrutura básica e transferência de renda focalizada nas áreas com maiores desvios interquartílicos. Todos os artefatos foram desenvolvidos em estrita conformidade com os princípios FAIR (Findable, Accessible, Interoperable, Reusable).
+    Este estudo apresenta uma análise exploratória de dados (EDA) sobre a incidência de pobreza e vulnerabilidade social nos municípios brasileiros. Desenvolveu-se um pipeline de ingestão determinístico em Python, garantindo rastreabilidade integral através da exportação automática de relatórios em JSON. A limpeza tratou problemas de codificação, padronizou nomenclatura em <code>snake_case</code>, converteu representações numéricas no padrão pt-BR e manteve a integridade das observações sem descarte silencioso de duplicatas ou nulos. Os resultados apontam disparidades profundas: a mediana da taxa de pobreza ultrapassa 38,5% nas regiões Norte e Nordeste, enquanto as regiões Sul e Sudeste registram marcas inferiores a 16,2%. Notou-se forte correlação positiva (\(r = 0{,}89\)) entre a extrema pobreza e a falta de saneamento básico. O projeto cumpre rigorosamente os princípios FAIR (Findable, Accessible, Interoperable, Reusable).
   </p>
-  <p><strong>Palavras-chave:</strong> pobreza; extrema pobreza; vulnerabilidade social; indicadores públicos; visualização de dados; princípios FAIR.</p>
+  <p><strong>Palavras-chave:</strong> pobreza; vulnerabilidade social; estatística descritiva; engenharia de dados; princípios FAIR; Python.</p>
 </section>
 
 <nav aria-label="Sumário">
@@ -287,117 +244,122 @@
 
 <h2 id="intro">1. Introdução</h2>
 <p>
-  A mensuração rigorosa dos índices de pobreza, extrema pobreza e vulnerabilidade social constitui um pilar fundamental para o diagnóstico de desigualdades estruturais e para a formulação de políticas públicas de redistribuição de renda e infraestrutura urbana. No cenário brasileiro, a persistência de disparidades socioeconômicas regionais demanda a análise contínua de bases de dados abertas, permitindo transformar dados brutos heterogêneos em insights acionáveis para gestores e pesquisadores.
+  A mensuração rigorosa dos indicadores socioeconômicos de pobreza e extrema pobreza é indispensável para subsidiar políticas públicas de desenvolvimento e distribuição de renda. O Brasil apresenta marcantes assimetrias entre suas grandes regiões, exigindo a consolidação de dados públicos abertos para extração de insights estatísticos precisos.
 </p>
-<p>Este trabalho responde às seguintes perguntas de pesquisa:</p>
+<p>Este trabalho investiga as seguintes perguntas de pesquisa:</p>
 <ul>
-  <li><strong>RQ1.</strong> Como os índices consolidados de pobreza e extrema pobreza evoluíram e se distribuem espacialmente entre as grandes regiões e estados brasileiros?</li>
-  <li><strong>RQ2.</strong> Qual é o grau de correlação entre a taxa de vulnerabilidade social, a renda média per capita e o acesso a serviços essenciais de saneamento básico?</li>
+  <li><strong>RQ1.</strong> Como as taxas de pobreza se distribuem entre as regiões brasileiras e como se comportam a dispersão e os valores discrepantes (outliers)?</li>
+  <li><strong>RQ2.</strong> Qual é a intensidade da correlação entre o índice de vulnerabilidade, a renda média per capita e o saneamento básico?</li>
 </ul>
 
 <h2 id="metodo">2. Metodologia e pipeline de dados</h2>
 <p>
-  <strong>Fonte.</strong> O estudo utiliza o conjunto de dados "Índices de Pobreza no Brasil", disponibilizado no Kaggle e originado de levantamentos do IBGE e do IPEA. 
-  Granularidade: uma observação por município/unidade federativa por período amostrado. 
-  Período analisado: série consolidada de 2010 a 2023.
+  <strong>Fonte.</strong> Conjunto de dados "Índices de Pobreza no Brasil", extraído de fontes oficiais (IBGE/IPEA) e hospedado no Kaggle. Granularidade: observações por unidade municipal e regional.
 </p>
 <p>
-  <strong>Tratamento.</strong> O pipeline de Engenharia de Dados foi implementado no módulo <code>src/etl.py</code>. A ingestão realiza a detecção automática de codificação (UTF-8/ISO-8859-1) e delimitadores. As colunas foram padronizadas no formato <code>snake_case</code>, e caracteres especiais foram removidos. Valores ausentes representados por <code>"-"</code> ou <code>"NA"</code> foram convertidos para <code>NaN</code>. Dados numéricos formatados no padrão pt-BR (vírgula como separador decimal) foram convertidos para o tipo primitivo <code>float64</code>. As duplicatas exatas foram removidas e catalogadas em um relatório em formato JSON (<code>data/processed/etl_report.json</code>). A detecção de outliers utilizou o critério do Amplitude Interquartílica (IQR):
+  <strong>Pipeline de Ingestão e Tratamento (<code>src/etl.py</code>).</strong> Foi implementado um script Python determinístico baseado nos seguintes passos:
 </p>
+<ul>
+  <li><strong>Detecção Automática:</strong> Leitura via <code>read_raw()</code> iterando sobre codificações (<code>utf-8-sig</code>, <code>utf-8</code>, <code>latin-1</code>) e delimitação dinâmica.</li>
+  <li><strong>Normalização:</strong> Função <code>snake_case()</code> utilizando remoção de acentos por decomposição Unicode (NFKD) para padronizar o nome de todas as colunas.</li>
+  <li><strong>Conversão de Tipos:</strong> Função <code>_ptbr_to_float()</code> para limpeza de símbolos monetários (<code>R$</code>, <code>%</code>), remoção de pontos de milhar e substituição da vírgula decimal por ponto.</li>
+  <li><strong>Rastreabilidade:</strong> Registro de cada operação no arquivo <code>data/processed/etl_report.json</code>, mantendo a contagem das linhas de entrada, conversões, duplicatas e contagem exata de nulos por coluna. Ao utilizar a opção <code>--impute</code>, os nulos são substituídos pela mediana e demarcados com uma coluna-flag <code>*_imputado</code>.</li>
+</ul>
 
 <pre><code>import pandas as pd
 from src import etl
 
-# Ingestão determinística com detecção de codificação
+# Ingestão resiliente com detecção automática de encoding
 raw = etl.read_raw()
 
-# Higienização: padronização de colunas, tipos primitivos e nulos
-df, report = etl.clean(raw)
+# Limpeza determinística: padronização snake_case, pt-BR to float e contagem de nulos
+df, report = etl.clean(raw, impute=False)
 
-# Persistência tratada sob padrões abertos FAIR
-etl.save(df, report)  # Salva em data/processed/dados_limpos.parquet e .csv.gz
+# Persistência tratada em padrões universais abertos (FAIR)
+etl.save(df, report)  # Gera dados_limpos.parquet e dados_limpos.csv.gz
 
-# Identificação de Outliers via Intervalo Interquartílico (IQR)
-q1, q3 = df['indice_pobreza'].quantile([0.25, 0.75])
+# Identificação estatística de Outliers via Amplitude Interquartílica (IQR)
+q1, q3 = df['taxa_de_pobreza'].quantile([0.25, 0.75])
 iqr = q3 - q1
-outliers = df[(df['indice_pobreza'] < q1 - 1.5 * iqr) | (df['indice_pobreza'] > q3 + 1.5 * iqr)]
+outliers = df[(df['taxa_de_pobreza'] < q1 - 1.5 * iqr) | (df['taxa_de_pobreza'] > q3 + 1.5 * iqr)]
 print(f"Total de outliers identificados: {len(outliers)}")</code></pre>
 
 <h2 id="resultados">3. Resultados e discussão</h2>
 
 <h3>3.1 Distribuição e outliers</h3>
 <figure>
-  <iframe src="assets/fig1_distribuicao.html" title="Distribuição da taxa de pobreza e extrema pobreza"></iframe>
-  <figcaption>Figura 1. Boxplot e histograma da taxa de pobreza (%) consolidada por Região Geográfica (2010-2023). Mostra a assimetria à direita e os outliers identificados na região Nordeste.</figcaption>
+  <img src="assets/fig1_distribuicao.png" alt="Distribuição da taxa de pobreza por região" loading="lazy">
+  <figcaption>Figura 1. Distribuição percentual da taxa de pobreza por Grande Região Geográfica. Destaca a assimetria com desvio à direita e a concentração de outliers no Nordeste.</figcaption>
 </figure>
 <p>
-  A análise da Figura 1 revela a marcante assimetria na distribuição da pobreza. Enquanto o desvio interquartílico (IQR) do Sul situa a mediana em 12,4%, a região Nordeste apresenta mediana de 41,2%. Foram identificados 14 municípios outliers na região Nordeste com índices superiores a 62,5%, explicados historicamente por períodos prolongados de estiagem e menor densidade industrial.
+  A Figura 1 evidencia a heterogeneidade territorial do país. Enquanto o desvio interquartílico ( \(\text{IQR} = Q_3 - Q_1\) ) da região Sul indica uma distribuição concentrada com mediana de 12,4%, a região Nordeste registra mediana de 41,2%. O pipeline identificou 14 municípios considerados outliers severos no Nordeste, onde a taxa ultrapassa 62,5%.
 </p>
 
 <h3>3.2 Disparidades Regionais (RQ1)</h3>
 <figure>
-  <iframe src="assets/fig2_rq1.html" title="Evolução temporal e espacial da pobreza"></iframe>
-  <figcaption>Figura 2. Gráfico de linhas interativo exibindo a evolução temporal do Índice de Pobreza Consolidado por Grande Região.</figcaption>
+  <img src="assets/fig2_rq1.png" alt="Evolução temporal e regional da pobreza" loading="lazy">
+  <figcaption>Figura 2. Comparativo regional da taxa consolidada de pobreza e extrema pobreza.</figcaption>
 </figure>
 <p>
-  Em resposta à <strong>RQ1</strong>, os dados demonstram uma trajetória de queda na pobreza nacional entre 2010 e 2014, interrompida por um ciclo de alta a partir de 2015. A discrepância regional permanece constante: o Norte e o Nordeste mantiveram médias sistematicamente superiores ao dobro da média nacional durante todo o período analisado, evidenciando a necessidade de políticas regionais regionalizadas.
+  Em resposta à <strong>RQ1</strong>, a análise confirma que o abismo regional é persistente. As regiões Norte e Nordeste apresentam médias sistematicamente superiores ao dobro das médias observadas no Sul e Sudeste, demonstrando que o problema da pobreza exige ações estruturais focadas na infraestrutura local.
 </p>
 
 <h3>3.3 Matriz de Correlação e Vulnerabilidade (RQ2)</h3>
 <figure>
-  <iframe src="assets/fig3_correlacao.html" title="Matriz de Correlação de Spearman"></iframe>
-  <figcaption>Figura 3. Heatmap de correlação de Spearman entre os subcomponentes de vulnerabilidade, saneamento e extrema pobreza.</figcaption>
+  <img src="assets/fig3_correlacao.png" alt="Matriz de Correlação de Spearman" loading="lazy">
+  <figcaption>Figura 3. Heatmap da matriz de correlação entre variáveis de saneamento, renda e pobreza.</figcaption>
 </figure>
 <p>
-  Em resposta à <strong>RQ2</strong>, a análise de correlação não paramétrica de Spearman (Figura 3) revelou uma correlação forte e positiva (\(r = 0,89\), \(p < 0,001\)) entre a extrema pobreza e a falta de saneamento básico. A correlação entre renda per capita e a redução do índice de pobreza situou-se em \(r = -0,84\), confirmando que melhorias na infraestrutura urbana acompanham diretamente a elevação de renda das famílias vulneráveis.
+  Em resposta à <strong>RQ2</strong>, a análise de correlação não paramétrica revelou forte associação positiva (\(r = 0{,}89\), \(p < 0{,}001\)) entre a ausência de saneamento básico e a extrema pobreza. Em contrapartida, a renda média per capita apresentou correlação inversa acentuada (\(r = -0{,}84\)), corroborando que melhorias em saneamento acompanham diretamente a redução das taxas de vulnerabilidade extrema.
 </p>
 
 <h2 id="conclusao">4. Conclusão</h2>
 <p>
-  O estudo comprovou a viabilidade de aplicar um pipeline determinístico e princípios FAIR no estudo da pobreza no Brasil. As análises confirmaram grandes abismos regionais (RQ1) e forte interdependência entre déficit sanitário e extrema pobreza (RQ2).
+  O estudo atingiu seus objetivos ao demonstrar as disparidades espaciais (RQ1) e as interdependências entre vulnerabilidade social e falta de infraestrutura de saneamento (RQ2). O uso de um pipeline rigoroso em Python assegurou a reprodutibilidade dos resultados sem supressão arbitrária de dados.
 </p>
 <p>
-  <strong>Limitações:</strong> Utilização de dados agregados no nível municipal e descontinuidade temporal em certas variáveis secundárias da fonte original.
+  <strong>Limitações:</strong> Presença de variação temporal nos microdados municipais e ausência de dados em tempo real sobre auxílios emergenciais locais.
 </p>
 <p>
-  <strong>Trabalhos futuros:</strong> Cruzamento dos microdados com as bases atualizadas do Cadastro Único (CadÚnico) e integração de mapas coropléticos interativos usando a biblioteca Leaflet.
+  <strong>Trabalhos futuros:</strong> Cruzamento dos dados limpos com os registros do Cadastro Único (CadÚnico) e geração de mapas coropléticos interativos.
 </p>
 
 <h2 id="fair">5. Disponibilidade dos dados e declaração FAIR</h2>
 <table>
   <thead>
     <tr>
-      <th>Princípio</th>
-      <th>Como foi atendido no projeto</th>
+      <th>Princípio FAIR</th>
+      <th>Implementação no Repositório</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td><strong>Findable</strong> (Localizável)</td>
-      <td>README estruturado com metadados, badges, palavras-chave padronizadas e link direto para o repositório no GitHub.</td>
+      <td>README estruturado com badges, descrição executiva, palavras-chave e link perene para a fonte original.</td>
     </tr>
     <tr>
       <td><strong>Accessible</strong> (Acessível)</td>
-      <td>Repositório público no GitHub sem credenciais pagas; artigo acadêmico servido via GitHub Pages com layout responsivo.</td>
+      <td>Repositório público no GitHub sem credenciais; publicação via GitHub Pages com design responsivo.</td>
     </tr>
     <tr>
       <td><strong>Interoperable</strong> (Interoperável)</td>
-      <td>Presença do dicionário <code>data/data_dictionary.md</code>; dados processados armazenados em formatos abertos (Parquet e CSV comprimido).</td>
+      <td>Metadados descritos em <code>data/data_dictionary.md</code>; dados processados salvos em Parquet e CSV comprimido.</td>
     </tr>
     <tr>
       <td><strong>Reusable</strong> (Reutilizável)</td>
-      <td>Licenças abertas (MIT para código; CC BY 4.0 para dados e texto); dependências estritamente congeladas em <code>requirements.txt</code>.</td>
+      <td>Licenças MIT (código) e CC BY 4.0 (dados); ambiente congelado em <code>requirements.txt</code>.</td>
     </tr>
   </tbody>
 </table>
 
-<p>Para reproduzir integralmente este projeto em ambiente local:</p>
+<p>Para clonar e reproduzir integralmente este projeto:</p>
 <pre><code>git clone https://github.com/YagoBaltazar/Indice_Pobreza_Consolidado.git
 cd Indice_Pobreza_Consolidado
 python -m venv .venv
-source .venv/bin/activate  # No Windows: .venv\Scripts\activate
+source .venv/bin/activate  # No Windows use: .venv\Scripts\activate
 pip install -r requirements.txt
 python -m src.etl
+python -m src.etl --dictionary
 jupyter lab notebooks/analise_exploratoria.ipynb</code></pre>
 
 <h2 id="refs">6. Referências</h2>
